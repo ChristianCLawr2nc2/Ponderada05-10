@@ -1,0 +1,25 @@
+@startuml
+title Arquitetura — Predicao BTC (Yahoo Finance + Docker)
+
+actor Postman as Cliente
+
+rectangle "Ambiente de treinamento\n(Jupyter / scripts/train_btc.py)" as Treino {
+  database "Yahoo Finance\nBTC-USD\n2021-10-05 .. 2026-10-05" as YF
+  file "data/btc_usd_dados.csv" as CSV
+  file "models/btc_model.joblib\n(coef, intercept, features)" as Artefato
+}
+
+rectangle "Container de inferencia\n(Docker + FastAPI)" as API {
+  component "GET /health" as Health
+  component "POST /predict" as Predict
+}
+
+YF --> CSV : yf.download + to_csv
+CSV --> Treino : features + LinearRegression
+Treino --> Artefato : joblib.dump
+Artefato --> API : COPY no Dockerfile (build)
+Cliente --> Health : verifica servico
+Cliente --> Predict : envia close, return_1d, ma_7
+Predict --> Cliente : prediction (close amanha)
+
+@enduml

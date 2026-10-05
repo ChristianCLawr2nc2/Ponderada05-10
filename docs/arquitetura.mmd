@@ -1,0 +1,32 @@
+```mermaid
+flowchart LR
+  subgraph Cliente["Aplicação cliente"]
+    PM["Postman<br/>GET /health<br/>POST /predict"]
+  end
+
+  subgraph Treino["Ambiente de treinamento"]
+    YF["Yahoo Finance<br/>BTC-USD<br/>05/10/2021 → 05/10/2026"]
+    NB["Jupyter / scripts/train_btc.py<br/>features + LinearRegression"]
+    CSV["data/btc_usd_dados.csv"]
+  end
+
+  subgraph Artefato["Artefato do modelo"]
+    JOB["models/btc_model.joblib<br/>coef, intercept, feature_cols"]
+  end
+
+  subgraph Inferencia["Container de inferência / backend"]
+    API["FastAPI Python<br/>carrega o .joblib no startup"]
+    H["GET /health"]
+    P["POST /predict"]
+  end
+
+  YF -->|yf.download + to_csv| CSV
+  CSV --> NB
+  NB -->|joblib.dump| JOB
+  JOB -->|COPY no Dockerfile<br/>durante o build| API
+  API --- H
+  API --- P
+  PM -->|HTTP| H
+  PM -->|HTTP JSON<br/>close, return_1d, ma_7| P
+  P -->|prediction<br/>close de amanhã| PM
+```
