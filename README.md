@@ -97,9 +97,11 @@ UI: PostMan para visualização de funcionamento.
 
 Fonte: Yahoo Finance (yfinance)
 Ativo: BTC-USD
-Período: 05/10/2021 → 05/10/2026 (end=2026-10-06 porque o end do yfinance é exclusivo)
+Período: 05/10/2021 → 05/10/2026 
 Frequência: diária
 Saída: data/btc_usd_dados.csv
+
+Eu usei os dados do Yahoo finance porque achei essa dependencia que permitia puxar direto para csv, o periodo eu escolhi porque de 5 anos porque acreditei que fosse um bom tempo, e a frequencia diária eu usei porque achei mais interessante já que é uma criptomoeda e é muito volatil.
 
 ### Problema de ML
 
@@ -121,7 +123,9 @@ Alternativa prática: scripts/train_btc.py
 ### Inferência / Docker
 
 Backend: FastAPI (GET /health, POST /predict)
-Transferência do modelo: COPY no Dockerfile (sem Compose, sem volume)
+Transferência do modelo: COPY no Dockerfile
 Cliente: Postman
 
-Os códiigos de treinamento e modelo foram gerados com AI, mas o que eu entendi é que ele no treinamento usando NumPy ele faz calculos matemáticos usando varias datas passadas e gera uma variavel dependente de dados passados para tentar adivinhar qual o valor de fechamento do BTC amanhã então usando o Média de erro Absoluto.
+eu usei o COPY porque não queria ter que usar Compose então busquei um jeito de contornar essa decisão.
+
+Os códigos de treinamento e modelo foram gerados com AI, mas o que eu entendi é que ele no treinamento usando NumPy ele faz calculos matemáticos usando varias datas passadas e gera uma variavel dependente de dados passados para tentar adivinhar qual o valor de fechamento do BTC amanhã então usando o Média de erro Absoluto.
